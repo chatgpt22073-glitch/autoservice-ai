@@ -1289,3 +1289,55 @@ body {
   }
 }
 
+/* ============================================================
+   MODERN ANIMATIONS CATALOG (Scroll Reveal & Button Micro-Interactions)
+   ============================================================ */
+
+/* 1. Scroll Reveal Animations */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(36px) scale(0.98);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+/* 2. Button Shimmer Light Sweep Effect */
+.calc-submit-btn, .header-btn, .booking-btn, .status-submit-btn, .service-select-btn {
+  position: relative;
+  overflow: hidden;
+}
+.calc-submit-btn::before, .header-btn::before, .booking-btn::before, .status-submit-btn::before, .service-select-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(60deg, transparent, rgba(255,255,255,0.35), transparent);
+  transform: rotate(30deg);
+  transition: all 0.6s ease;
+  pointer-events: none;
+}
+.calc-submit-btn:hover::before, .header-btn:hover::before, .booking-btn:hover::before, .status-submit-btn:hover::before, .service-select-btn:hover::before {
+  left: 100%;
+}
+
+/* 3. Card Hover Spring & Glow */
+.gallery-card, .service-card, .calc-card, .status-box-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s;
+}
+.gallery-card:hover, .service-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 20px 40px -10px rgba(0, 242, 254, 0.25);
+  border-color: var(--primary-cyan);
+}
+
+

@@ -747,6 +747,28 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // ============================================================
+  // INTERSECTION OBSERVER SCROLL ANIMATION ENGINE
+  // ============================================================
+  const revealElements = document.querySelectorAll('.gallery-card, .service-card, .sec-title, .sec-sub, .ba-slider-container, .status-box-card, .faq-item');
+  revealElements.forEach(el => el.classList.add('reveal-on-scroll'));
+
+  const observerOptions = {
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const scrollObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  revealElements.forEach(el => scrollObserver.observe(el));
 });
 
 function prefillService(key) {
