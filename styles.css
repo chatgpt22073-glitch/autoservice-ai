@@ -593,6 +593,232 @@ body {
   font-size: 0.85rem;
 }
 
+/* ============================================================
+   Form Row Layouts (multi-column vehicle selectors)
+   ============================================================ */
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.form-row-3col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* ============================================================
+   Checklist Section Label
+   ============================================================ */
+.checklist-section-label {
+  font-family: var(--font-headline);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+/* ============================================================
+   Service Checklist Container
+   ============================================================ */
+.service-checklist {
+  max-height: 420px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  padding-right: 4px;
+}
+.service-checklist::-webkit-scrollbar {
+  width: 5px;
+}
+.service-checklist::-webkit-scrollbar-track {
+  background: transparent;
+}
+.service-checklist::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+}
+
+/* ============================================================
+   Checklist Group (visual grouping per category)
+   ============================================================ */
+.service-checklist-group {
+  margin-bottom: 16px;
+}
+.service-checklist-group:last-child {
+  margin-bottom: 0;
+}
+
+.checklist-group-title {
+  font-family: var(--font-headline);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--primary-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 12px;
+  background: rgba(0, 242, 254, 0.06);
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+/* ============================================================
+   Individual Checklist Item (label wrapping checkbox)
+   ============================================================ */
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+  user-select: none;
+}
+.checklist-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Checked / highlighted state */
+.checklist-item.checked {
+  background: rgba(0, 242, 254, 0.08);
+  border-color: rgba(0, 242, 254, 0.25);
+}
+
+/* Checkbox styling */
+.checklist-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s;
+}
+.checklist-checkbox:checked {
+  background: var(--primary-cyan);
+  border-color: var(--primary-cyan);
+}
+.checklist-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* Service name text */
+.checklist-name {
+  flex: 1;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+.checklist-item.checked .checklist-name {
+  color: var(--text-primary);
+}
+
+/* Price tag on right side */
+.checklist-price {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  white-space: nowrap;
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+}
+.checklist-item.checked .checklist-price {
+  color: var(--primary-cyan);
+  background: rgba(0, 242, 254, 0.1);
+}
+
+/* ============================================================
+   Live Running Total
+   ============================================================ */
+.live-total {
+  font-family: var(--font-headline);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--primary-cyan);
+  text-align: center;
+  padding: 12px 16px;
+  background: rgba(0, 242, 254, 0.06);
+  border: 1px solid rgba(0, 242, 254, 0.2);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  display: none;
+  animation: fadeSlideIn 0.3s ease;
+}
+.live-total.visible {
+  display: block;
+}
+
+/* ============================================================
+   Result: Additional styles for new layout
+   ============================================================ */
+.breakdown-section-title {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.price-base {
+  text-decoration: line-through;
+  color: var(--text-dim);
+  font-size: 0.82em;
+  margin-right: 2px;
+}
+
+.result-multipliers {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+.multipliers-title {
+  font-family: var(--font-headline);
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--primary-blue);
+}
+.multiplier-line {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  padding: 2px 0;
+}
+
+.result-parts-note {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+
 /* Mobile & Tablet Breakpoints */
 @media (max-width: 992px) {
   .hero-grid {
@@ -607,6 +833,12 @@ body {
   }
   .container {
     padding: 0 20px;
+  }
+  .form-row-2col {
+    grid-template-columns: 1fr 1fr;
+  }
+  .form-row-3col {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -635,5 +867,28 @@ body {
   .hero-stats {
     flex-wrap: wrap;
     gap: 16px;
+  }
+  .form-row-2col {
+    grid-template-columns: 1fr;
+  }
+  .form-row-3col {
+    grid-template-columns: 1fr;
+  }
+  .checklist-item {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  .checklist-name {
+    font-size: 0.82rem;
+  }
+  .checklist-price {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+  }
+  .service-checklist {
+    max-height: 350px;
+  }
+  .live-total {
+    font-size: 0.95rem;
   }
 }

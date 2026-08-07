@@ -1,16 +1,24 @@
 /* ==========================================================================
-   Autoservice_AI - Master App Script v3.0
-   Detailed Repair Cost Calculator with Model-Aware Pricing
+   Autoservice_AI - Master App Script v4.0
+   Detailed Repair Cost Calculator with Multi-Select Services & Multipliers
    ========================================================================== */
 
-const TELEGRAM_BOT_TOKEN = "8718676123:AAE-Uh_HRkWJkZF_5vznXzKqy8lc3ezKRnI";
-const TELEGRAM_CHAT_ID = "628992567";
+const TELEGRAM_BOT_TOKEN = '8718676123:AAE-Uh_HRkWJkZF_5vznXzKqy8lc3ezKRnI';
+const TELEGRAM_CHAT_ID = '628992567';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const calcForm = document.getElementById('calc-form');
+  // ============================================================
+  // DOM Elements
+  // ============================================================
+  const brandSelect = document.getElementById('car-brand');
+  const modelSelect = document.getElementById('car-model');
+  const yearSelect = document.getElementById('car-year');
+  const engineSelect = document.getElementById('engine-volume');
+  const transSelect = document.getElementById('transmission');
+  const checklistContainer = document.getElementById('service-checklist');
   const calcBtn = document.getElementById('calc-btn');
   const resultBox = document.getElementById('result-box');
-  const bookingBtn = document.getElementById('booking-btn');
+  const liveTotalEl = document.getElementById('live-total');
 
   const mobileToggle = document.getElementById('mobile-toggle');
   const navLinks = document.getElementById('nav-links');
@@ -23,283 +31,480 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ============================================================
-  // DATABASE: Realistic pricing by service category
+  // VEHICLE DATABASE: Brand → Models
   // ============================================================
-  const serviceDB = {
-    'body': {
-      title: 'Кузовной ремонт & Покраска',
-      laborRate: 1800,       // ₽ за нормо-час
-      laborHoursMin: 4,
-      laborHoursMax: 12,
-      partsMin: 3500,
-      partsMax: 18000,
-      materialsMin: 1200,
-      materialsMax: 4500,
-      timeMin: '2 дня',
-      timeMax: '5 дней'
+  const vehicleDB = {
+    'mercedes': {
+      label: 'Mercedes-Benz',
+      models: ['C-Class', 'E-Class', 'S-Class', 'A-Class', 'GLA', 'GLB', 'GLC', 'GLE', 'GLS', 'G-Class', 'CLA', 'CLS', 'AMG GT']
     },
-    'engine': {
-      title: 'Диагностика & Ремонт ДВС',
-      laborRate: 2200,
-      laborHoursMin: 3,
-      laborHoursMax: 16,
-      partsMin: 4000,
-      partsMax: 32000,
-      materialsMin: 800,
-      materialsMax: 3500,
-      timeMin: '1 день',
-      timeMax: '4 дня'
+    'bmw': {
+      label: 'BMW',
+      models: ['1 Series', '3 Series', '5 Series', '7 Series', 'X1', 'X3', 'X5', 'X6', 'X7', 'M3', 'M5', 'Z4', 'i4']
     },
-    'maintenance': {
-      title: 'Регламентное ТО & Замена масел',
-      laborRate: 1500,
-      laborHoursMin: 1,
-      laborHoursMax: 3,
-      partsMin: 2800,
-      partsMax: 8500,
-      materialsMin: 400,
-      materialsMax: 1200,
-      timeMin: '1 час',
-      timeMax: '3 часа'
+    'audi': {
+      label: 'Audi',
+      models: ['A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'TT', 'RS3', 'RS6']
     },
-    'suspension': {
-      title: 'Ходовая часть & Подвеска',
-      laborRate: 1700,
-      laborHoursMin: 2,
-      laborHoursMax: 8,
-      partsMin: 3200,
-      partsMax: 16000,
-      materialsMin: 600,
-      materialsMax: 2000,
-      timeMin: '3 часа',
-      timeMax: '1 день'
+    'porsche': {
+      label: 'Porsche',
+      models: ['Cayenne', 'Macan', 'Panamera', '911', 'Taycan', 'Boxster', 'Cayman']
     },
-    'detailing': {
-      title: 'Детейлинг & Защита Керамикой',
-      laborRate: 2000,
-      laborHoursMin: 4,
-      laborHoursMax: 12,
-      partsMin: 6000,
-      partsMax: 22000,
-      materialsMin: 2000,
-      materialsMax: 8000,
-      timeMin: '1 день',
-      timeMax: '2 дня'
+    'lexus': {
+      label: 'Lexus',
+      models: ['IS', 'ES', 'GS', 'LS', 'NX', 'RX', 'LX', 'UX', 'LC']
     },
-    'diagnostics': {
-      title: 'Компьютерная Диагностика',
-      laborRate: 1600,
-      laborHoursMin: 0.5,
-      laborHoursMax: 2,
-      partsMin: 0,
-      partsMax: 0,
-      materialsMin: 0,
-      materialsMax: 300,
-      timeMin: '30 минут',
-      timeMax: '1.5 часа'
+    'toyota': {
+      label: 'Toyota',
+      models: ['Camry', 'Corolla', 'RAV4', 'Land Cruiser 200', 'Land Cruiser 300', 'Land Cruiser Prado', 'Highlander', 'C-HR', 'Supra', 'Yaris']
+    },
+    'volkswagen': {
+      label: 'Volkswagen',
+      models: ['Golf', 'Passat', 'Tiguan', 'Touareg', 'Polo', 'Jetta', 'ID.4', 'Arteon', 'T-Roc']
+    },
+    'hyundai': {
+      label: 'Hyundai',
+      models: ['Solaris', 'Tucson', 'Santa Fe', 'Creta', 'Elantra', 'Sonata', 'Palisade', 'i30', 'Kona']
+    },
+    'kia': {
+      label: 'Kia',
+      models: ['Rio', 'Ceed', 'Sportage', 'Sorento', 'K5', 'Stinger', 'Seltos', 'Soul', 'Carnival']
+    },
+    'nissan': {
+      label: 'Nissan',
+      models: ['Qashqai', 'X-Trail', 'Murano', 'Patrol', 'Juke', 'Leaf', 'Note', 'Teana', 'Pathfinder']
     }
   };
 
   // ============================================================
-  // Brand premium multiplier (affects parts price)
+  // BRAND LABOR MULTIPLIERS
   // ============================================================
-  const brandData = {
-    'porsche':    { factor: 1.65, laborFactor: 1.3, label: 'Porsche' },
-    'mercedes':   { factor: 1.50, laborFactor: 1.2, label: 'Mercedes-Benz' },
-    'bmw':        { factor: 1.50, laborFactor: 1.2, label: 'BMW' },
-    'audi':       { factor: 1.40, laborFactor: 1.15, label: 'Audi' },
-    'lexus':      { factor: 1.35, laborFactor: 1.1, label: 'Lexus' },
-    'toyota':     { factor: 1.00, laborFactor: 1.0, label: 'Toyota' },
-    'volkswagen': { factor: 1.15, laborFactor: 1.05, label: 'Volkswagen' },
-    'hyundai':    { factor: 1.00, laborFactor: 1.0, label: 'Hyundai' },
-    'kia':        { factor: 1.00, laborFactor: 1.0, label: 'Kia' },
-    'nissan':     { factor: 1.05, laborFactor: 1.0, label: 'Nissan' },
-    'other':      { factor: 1.00, laborFactor: 1.0, label: 'Другая' }
+  const brandMultipliers = {
+    'porsche':    1.8,
+    'mercedes':   1.5,
+    'bmw':        1.5,
+    'audi':       1.4,
+    'lexus':      1.3,
+    'volkswagen': 1.1,
+    'toyota':     1.0,
+    'hyundai':    1.0,
+    'kia':        1.0,
+    'nissan':     1.0
   };
 
   // ============================================================
-  // Model class detection (SUV/crossover = heavier work)
+  // ENGINE VOLUME MULTIPLIERS
   // ============================================================
-  function detectModelClass(modelText) {
-    const lower = modelText.toLowerCase();
-    const suvKeywords = [
-      'x1','x3','x5','x6','x7','q3','q5','q7','q8',
-      'gle','gls','glc','glb','gla',
-      'cayenne','macan','touareg','tiguan',
-      'land cruiser','prado','rav4','highlander','fortuner',
-      'rx','nx','lx','ux','gx',
-      'tucson','santa fe','creta','sportage','sorento',
-      'patrol','pathfinder','murano','x-trail','qashqai',
-      'внедорожник','кроссовер','suv','джип','jeep'
-    ];
-    for (const kw of suvKeywords) {
-      if (lower.includes(kw)) return { class: 'SUV / Кроссовер', factor: 1.25 };
+  function getEngineMultiplier(engineVal) {
+    switch (engineVal) {
+      case '1.4': case '1.6': return 1.0;
+      case '1.8': case '2.0': return 1.0;
+      case '2.5': case '3.0': return 1.15;
+      case '3.5': case '4.0': return 1.3;
+      case '5.0': return 1.5;
+      default: return 1.0;
     }
-
-    const sportKeywords = [
-      'm3','m4','m5','m8','amg','rs3','rs4','rs5','rs6','rs7',
-      '911','panamera','cayman','boxster','gt3','gt4',
-      'f-type','supra','is f','rc f','lc',
-      'спорт','sport','купе','coupe'
-    ];
-    for (const kw of sportKeywords) {
-      if (lower.includes(kw)) return { class: 'Спорткар / Купе', factor: 1.35 };
-    }
-
-    return { class: 'Седан / Хэтчбек', factor: 1.0 };
   }
 
   // ============================================================
-  // Symptom analysis — adjusts complexity estimate (0.0 – 1.0)
+  // SUV DETECTION — +15% for suspension/brake work
   // ============================================================
-  function analyzeSymptoms(text) {
-    if (!text) return { severity: 0.3, notes: [] };
+  const suvModels = [
+    'GLA', 'GLB', 'GLC', 'GLE', 'GLS', 'G-Class',
+    'X1', 'X3', 'X5', 'X6', 'X7',
+    'Q3', 'Q5', 'Q7', 'Q8',
+    'Cayenne', 'Macan',
+    'NX', 'RX', 'LX', 'UX',
+    'RAV4', 'Land Cruiser 200', 'Land Cruiser 300', 'Land Cruiser Prado', 'Highlander',
+    'Tiguan', 'Touareg', 'T-Roc',
+    'Tucson', 'Santa Fe', 'Creta', 'Palisade', 'Kona',
+    'Sportage', 'Sorento', 'Seltos', 'Carnival',
+    'Qashqai', 'X-Trail', 'Murano', 'Patrol', 'Juke', 'Pathfinder'
+  ];
 
-    const lower = text.toLowerCase();
-    let severity = 0.3;
-    const notes = [];
+  function isSUV(modelName) {
+    return suvModels.some(s => modelName === s);
+  }
 
-    const patterns = [
-      { keywords: ['вмятина','вмятины','деформация','удар'], add: 0.2, note: '🔩 Обнаружен кузовной дефект — требуется рихтовка' },
-      { keywords: ['покраска','краска','царапина','скол','сколы'], add: 0.15, note: '🎨 Необходима локальная покраска элемента' },
-      { keywords: ['бампер','крыло','дверь','капот','порог'], add: 0.12, note: '🚗 Ремонт/замена наружного элемента кузова' },
-      { keywords: ['стук','стучит','гремит','люфт'], add: 0.18, note: '🔧 Диагностика стуков — проверка шаровых и сайлентблоков' },
-      { keywords: ['шум','гул','вибрация','вибрирует'], add: 0.14, note: '🔊 Вибродиагностика — ступичные подшипники / балансировка' },
-      { keywords: ['масло','течь','потёк','подтекает'], add: 0.2, note: '🛢️ Устранение течи масла — замена прокладок/сальников' },
-      { keywords: ['дым','дымит','выхлоп','чёрный дым','белый дым'], add: 0.25, note: '💨 Повышенный дымовыхлоп — эндоскопия цилиндров' },
-      { keywords: ['коробка','акпп','мкпп','передача','переключение'], add: 0.22, note: '⚙️ Диагностика трансмиссии — замена масла АКПП/вариатора' },
-      { keywords: ['тормоз','тормозит','скрип тормоз','колодки','диски тормоз'], add: 0.1, note: '🛑 Замена тормозных колодок и дисков' },
-      { keywords: ['аккумулятор','не заводится','стартер','генератор'], add: 0.12, note: '🔋 Проверка электроцепей и системы зарядки' },
-      { keywords: ['кондиционер','климат','заправка'], add: 0.08, note: '❄️ Обслуживание системы кондиционирования' },
-    ];
+  // ============================================================
+  // SERVICE DATABASE — Grouped works with base prices
+  // ============================================================
+  const serviceGroups = [
+    {
+      id: 'engine',
+      title: '🔧 Двигатель и ТО',
+      services: [
+        { id: 'oil_change',       name: 'Замена масла ДВС + фильтр',         basePrice: 800 },
+        { id: 'air_filter',       name: 'Замена воздушного фильтра',          basePrice: 300 },
+        { id: 'cabin_filter',     name: 'Замена салонного фильтра',           basePrice: 400 },
+        { id: 'spark_plugs_4',    name: 'Замена свечей зажигания (4 цил.)',   basePrice: 800 },
+        { id: 'spark_plugs_6',    name: 'Замена свечей зажигания (6 цил.)',   basePrice: 1200 },
+        { id: 'timing_belt',      name: 'Замена ремня/цепи ГРМ',             basePrice: 9000,  rangeMin: 6000, rangeMax: 12000 },
+        { id: 'coolant',          name: 'Замена антифриза',                   basePrice: 1200 },
+        { id: 'fuel_filter',      name: 'Замена топливного фильтра',          basePrice: 600 },
+        { id: 'injector_flush',   name: 'Промывка инжектора',                 basePrice: 2500 },
+        { id: 'engine_diag',      name: 'Компьютерная диагностика ДВС',       basePrice: 1500 }
+      ]
+    },
+    {
+      id: 'suspension',
+      title: '🚗 Ходовая часть и подвеска',
+      isSuspension: true,
+      services: [
+        { id: 'susp_diag',        name: 'Диагностика ходовой',                basePrice: 800 },
+        { id: 'front_pads',       name: 'Замена передних тормозных колодок',   basePrice: 1200 },
+        { id: 'rear_pads',        name: 'Замена задних тормозных колодок',     basePrice: 1200 },
+        { id: 'brake_discs',      name: 'Замена тормозных дисков (пара)',      basePrice: 2000 },
+        { id: 'front_shocks',     name: 'Замена передних стоек амортизаторов (2 шт)', basePrice: 3000 },
+        { id: 'rear_shocks',      name: 'Замена задних стоек амортизаторов (2 шт)',  basePrice: 2500 },
+        { id: 'control_arm',      name: 'Замена рычага подвески',             basePrice: 2000 },
+        { id: 'bushings',         name: 'Замена сайлентблоков (пара)',         basePrice: 1800 },
+        { id: 'ball_joint',       name: 'Замена шаровой опоры',               basePrice: 1500 },
+        { id: 'wheel_bearing',    name: 'Замена ступичного подшипника',        basePrice: 2500 },
+        { id: 'alignment',        name: '3D сход-развал',                     basePrice: 2500 }
+      ]
+    },
+    {
+      id: 'transmission',
+      title: '⚙️ Трансмиссия',
+      services: [
+        { id: 'atf_partial',      name: 'Замена масла в АКПП (частичная)',     basePrice: 1500 },
+        { id: 'atf_full',         name: 'Замена масла в АКПП (полная аппаратная)', basePrice: 3500 },
+        { id: 'mtf_change',       name: 'Замена масла в МКПП',                basePrice: 800 },
+        { id: 'clutch',           name: 'Замена сцепления',                   basePrice: 8000,  rangeMin: 6000, rangeMax: 10000 }
+      ]
+    },
+    {
+      id: 'body',
+      title: '🎨 Кузов и покраска',
+      services: [
+        { id: 'paint_panel',      name: 'Покраска одного элемента (дверь/крыло)', basePrice: 8000 },
+        { id: 'polish',           name: 'Полировка кузова',                   basePrice: 5000 },
+        { id: 'pdr',              name: 'Удаление вмятин без покраски (PDR)',  basePrice: 3000 },
+        { id: 'windshield',       name: 'Замена лобового стекла (работа)',     basePrice: 2500 }
+      ]
+    },
+    {
+      id: 'electrical',
+      title: '⚡ Электрика и кондиционер',
+      services: [
+        { id: 'ac_recharge',      name: 'Заправка кондиционера',              basePrice: 2500 },
+        { id: 'alternator',       name: 'Замена генератора',                  basePrice: 2500 },
+        { id: 'starter',          name: 'Замена стартера',                    basePrice: 3000 },
+        { id: 'battery_install',  name: 'Замена аккумулятора (работа)',        basePrice: 500 }
+      ]
+    }
+  ];
 
-    for (const p of patterns) {
-      for (const kw of p.keywords) {
-        if (lower.includes(kw)) {
-          severity += p.add;
-          notes.push(p.note);
-          break;
+  // ============================================================
+  // POPULATE YEAR SELECT (2010-2026)
+  // ============================================================
+  if (yearSelect) {
+    for (let y = 2026; y >= 2010; y--) {
+      const opt = document.createElement('option');
+      opt.value = y;
+      opt.textContent = y;
+      yearSelect.appendChild(opt);
+    }
+  }
+
+  // ============================================================
+  // DYNAMIC MODEL POPULATION on brand change
+  // ============================================================
+  function populateModels(brand) {
+    modelSelect.innerHTML = '';
+    const data = vehicleDB[brand];
+    if (!data) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = '— Выберите модель —';
+      modelSelect.appendChild(opt);
+      return;
+    }
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = '— Выберите модель —';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    modelSelect.appendChild(placeholder);
+
+    data.models.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = m;
+      modelSelect.appendChild(opt);
+    });
+  }
+
+  if (brandSelect) {
+    brandSelect.addEventListener('change', () => {
+      populateModels(brandSelect.value);
+      updateLiveTotal();
+    });
+    // Initialize on load
+    populateModels(brandSelect.value);
+  }
+
+  if (modelSelect) {
+    modelSelect.addEventListener('change', () => updateLiveTotal());
+  }
+  if (engineSelect) {
+    engineSelect.addEventListener('change', () => updateLiveTotal());
+  }
+
+  // ============================================================
+  // BUILD SERVICE CHECKLIST
+  // ============================================================
+  function buildChecklist() {
+    if (!checklistContainer) return;
+    checklistContainer.innerHTML = '';
+
+    serviceGroups.forEach(group => {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'service-checklist-group';
+
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'checklist-group-title';
+      titleDiv.textContent = group.title;
+      groupDiv.appendChild(titleDiv);
+
+      group.services.forEach(svc => {
+        const itemLabel = document.createElement('label');
+        itemLabel.className = 'checklist-item';
+        itemLabel.setAttribute('data-service-id', svc.id);
+        itemLabel.setAttribute('data-group-id', group.id);
+        if (group.isSuspension) {
+          itemLabel.setAttribute('data-suspension', 'true');
+        }
+        itemLabel.setAttribute('data-base-price', svc.basePrice);
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'checklist-checkbox';
+        checkbox.value = svc.id;
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'checklist-name';
+        nameSpan.textContent = svc.name;
+
+        const priceSpan = document.createElement('span');
+        priceSpan.className = 'checklist-price';
+
+        const priceText = svc.rangeMin
+          ? `${svc.rangeMin.toLocaleString('ru-RU')}–${svc.rangeMax.toLocaleString('ru-RU')} ₽`
+          : `${svc.basePrice.toLocaleString('ru-RU')} ₽`;
+        priceSpan.textContent = priceText;
+
+        itemLabel.appendChild(checkbox);
+        itemLabel.appendChild(nameSpan);
+        itemLabel.appendChild(priceSpan);
+
+        checkbox.addEventListener('change', () => {
+          if (checkbox.checked) {
+            itemLabel.classList.add('checked');
+          } else {
+            itemLabel.classList.remove('checked');
+          }
+          updateLiveTotal();
+        });
+
+        groupDiv.appendChild(itemLabel);
+      });
+
+      checklistContainer.appendChild(groupDiv);
+    });
+  }
+
+  buildChecklist();
+
+  // ============================================================
+  // LIVE TOTAL — updates as user checks/unchecks + changes car
+  // ============================================================
+  function getSelectedServices() {
+    const selected = [];
+    const checked = checklistContainer.querySelectorAll('.checklist-checkbox:checked');
+    checked.forEach(cb => {
+      const item = cb.closest('.checklist-item');
+      const serviceId = item.getAttribute('data-service-id');
+      const groupId = item.getAttribute('data-group-id');
+      const isSusp = item.getAttribute('data-suspension') === 'true';
+      const basePrice = parseInt(item.getAttribute('data-base-price'), 10);
+
+      // Find the full service definition for the name
+      let serviceName = '';
+      for (const g of serviceGroups) {
+        for (const s of g.services) {
+          if (s.id === serviceId) {
+            serviceName = s.name;
+            break;
+          }
         }
       }
-    }
 
-    severity = Math.min(severity, 1.0);
-    return { severity, notes: [...new Set(notes)] };
+      selected.push({ serviceId, groupId, isSuspension: isSusp, basePrice, name: serviceName });
+    });
+    return selected;
+  }
+
+  function computePrice(basePrice, isSuspension) {
+    const brand = brandSelect ? brandSelect.value : 'toyota';
+    const model = modelSelect ? modelSelect.value : '';
+    const engine = engineSelect ? engineSelect.value : '2.0';
+
+    const brandMult = brandMultipliers[brand] || 1.0;
+    const engineMult = getEngineMultiplier(engine);
+    const suvMult = (isSuspension && model && isSUV(model)) ? 1.15 : 1.0;
+
+    return Math.round(basePrice * brandMult * engineMult * suvMult);
+  }
+
+  function updateLiveTotal() {
+    const selected = getSelectedServices();
+    let total = 0;
+    selected.forEach(s => {
+      total += computePrice(s.basePrice, s.isSuspension);
+    });
+
+    if (liveTotalEl) {
+      if (selected.length > 0) {
+        liveTotalEl.textContent = `Итого за работу: ${total.toLocaleString('ru-RU')} ₽`;
+        liveTotalEl.classList.add('visible');
+      } else {
+        liveTotalEl.textContent = '';
+        liveTotalEl.classList.remove('visible');
+      }
+    }
   }
 
   // ============================================================
-  // Main calculation
+  // CALCULATE BUTTON — render detailed result
   // ============================================================
-  calcForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  if (calcBtn) {
+    calcBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
 
-    const carBrand = document.getElementById('car-brand').value;
-    const carModel = document.getElementById('car-model').value.trim();
-    const serviceKey = document.getElementById('service-type').value;
-    const customText = document.getElementById('custom-description').value.trim();
+      const selected = getSelectedServices();
 
-    calcBtn.innerHTML = '<span class="btn-spinner"></span> Анализируем параметры...';
-    calcBtn.disabled = true;
+      if (selected.length === 0) {
+        resultBox.innerHTML = `
+          <div class="result-header">
+            <div class="result-header-label">⚠️ ВНИМАНИЕ</div>
+            <div class="result-car-info">Выберите хотя бы одну услугу из списка</div>
+          </div>
+        `;
+        resultBox.style.display = 'block';
+        resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
 
-    // Simulate analysis delay
-    await new Promise(resolve => setTimeout(resolve, 800));
+      const brand = brandSelect ? brandSelect.value : 'toyota';
+      const model = modelSelect ? modelSelect.value : '';
+      const year = yearSelect ? yearSelect.value : '';
+      const engine = engineSelect ? engineSelect.value : '2.0';
+      const trans = transSelect ? transSelect.value : '';
 
-    const service = serviceDB[serviceKey];
-    const brand = brandData[carBrand] || brandData['other'];
-    const modelClass = detectModelClass(carModel);
-    const symptoms = analyzeSymptoms(customText);
+      const brandMult = brandMultipliers[brand] || 1.0;
+      const engineMult = getEngineMultiplier(engine);
+      const brandLabel = vehicleDB[brand] ? vehicleDB[brand].label : brand;
 
-    // Severity interpolates between min and max
-    const sev = symptoms.severity;
+      calcBtn.innerHTML = '<span class="btn-spinner"></span> Рассчитываем смету...';
+      calcBtn.disabled = true;
 
-    // Labor calculation
-    const laborHours = service.laborHoursMin + (service.laborHoursMax - service.laborHoursMin) * sev;
-    const laborCost = Math.round(laborHours * service.laborRate * brand.laborFactor * modelClass.factor);
+      // Simulate brief analysis
+      await new Promise(resolve => setTimeout(resolve, 600));
 
-    // Parts calculation
-    const partsCost = Math.round(
-      (service.partsMin + (service.partsMax - service.partsMin) * sev) * brand.factor * modelClass.factor
-    );
+      // Compute individual prices
+      const lines = [];
+      let subtotal = 0;
 
-    // Materials calculation
-    const materialsCost = Math.round(
-      (service.materialsMin + (service.materialsMax - service.materialsMin) * sev) * modelClass.factor
-    );
+      selected.forEach(s => {
+        const price = computePrice(s.basePrice, s.isSuspension);
+        subtotal += price;
+        lines.push({ name: s.name, basePrice: s.basePrice, finalPrice: price, isSuspension: s.isSuspension });
+      });
 
-    // Total
-    const total = laborCost + partsCost + materialsCost;
+      // Determine if any multipliers are active
+      const multiplierNotes = [];
+      if (brandMult !== 1.0) {
+        multiplierNotes.push(`${brandLabel}: коэф. работы ×${brandMult}`);
+      }
+      if (engineMult !== 1.0) {
+        multiplierNotes.push(`Объём ${engine}L: коэф. ×${engineMult}`);
+      }
+      const hasAnySUV = selected.some(s => s.isSuspension && model && isSUV(model));
+      if (hasAnySUV) {
+        multiplierNotes.push(`${model} (SUV/кроссовер): +15% к ходовой/тормозам`);
+      }
 
-    // Time estimate
-    const timeEstimate = sev > 0.6 ? service.timeMax : service.timeMin;
+      renderResult({
+        brandLabel,
+        model: model || '—',
+        year: year || '—',
+        engine: engine ? engine + 'L' : '—',
+        transmission: trans || '—',
+        lines,
+        subtotal,
+        multiplierNotes
+      });
 
-    // Render results
-    renderResult({
-      brandLabel: brand.label,
-      carModel: carModel || '—',
-      modelClassName: modelClass.class,
-      serviceTitle: service.title,
-      laborHours: laborHours.toFixed(1),
-      laborCost,
-      partsCost,
-      materialsCost,
-      total,
-      timeEstimate,
-      symptomNotes: symptoms.notes
+      calcBtn.innerHTML = '⚡ Рассчитать стоимость';
+      calcBtn.disabled = false;
     });
-
-    calcBtn.innerHTML = '⚡ Рассчитать стоимость ремонта';
-    calcBtn.disabled = false;
-  });
+  }
 
   // ============================================================
   // Render detailed result
   // ============================================================
   function renderResult(data) {
+    const linesHTML = data.lines.map(l => {
+      const changed = l.finalPrice !== l.basePrice;
+      const basePriceStr = l.basePrice.toLocaleString('ru-RU');
+      const finalPriceStr = l.finalPrice.toLocaleString('ru-RU');
+      return `
+        <div class="breakdown-row">
+          <span class="breakdown-label">${l.name}</span>
+          <span class="breakdown-value">
+            ${changed ? `<span class="price-base">${basePriceStr} ₽</span> → ` : ''}${finalPriceStr} ₽
+          </span>
+        </div>
+      `;
+    }).join('');
+
+    const multiplierHTML = data.multiplierNotes.length > 0
+      ? `<div class="result-multipliers">
+           <div class="multipliers-title">📊 Применённые коэффициенты:</div>
+           ${data.multiplierNotes.map(n => `<div class="multiplier-line">• ${n}</div>`).join('')}
+         </div>`
+      : '';
+
     const resultHTML = `
       <div class="result-header">
         <div class="result-header-label">ДЕТАЛИЗИРОВАННАЯ СМЕТА</div>
-        <div class="result-car-info">${data.brandLabel} ${data.carModel} · ${data.modelClassName}</div>
-        <div class="result-service-info">${data.serviceTitle}</div>
+        <div class="result-car-info">${data.brandLabel} ${data.model} ${data.year} · ${data.engine} · ${data.transmission}</div>
       </div>
 
+      ${multiplierHTML}
+
       <div class="result-breakdown">
-        <div class="breakdown-row">
-          <span class="breakdown-icon">🛠️</span>
-          <span class="breakdown-label">Работа мастера (${data.laborHours} нормо-ч.)</span>
-          <span class="breakdown-value">${data.laborCost.toLocaleString('ru-RU')} ₽</span>
-        </div>
-        <div class="breakdown-row">
-          <span class="breakdown-icon">⚙️</span>
-          <span class="breakdown-label">Запчасти и комплектующие</span>
-          <span class="breakdown-value">${data.partsCost.toLocaleString('ru-RU')} ₽</span>
-        </div>
-        <div class="breakdown-row">
-          <span class="breakdown-icon">🧪</span>
-          <span class="breakdown-label">Расходные материалы</span>
-          <span class="breakdown-value">${data.materialsCost.toLocaleString('ru-RU')} ₽</span>
-        </div>
+        <div class="breakdown-section-title">Выбранные работы:</div>
+        ${linesHTML}
       </div>
 
       <div class="result-total-row">
-        <span>ИТОГО:</span>
-        <span class="result-total-value">${data.total.toLocaleString('ru-RU')} ₽</span>
+        <span>ИТОГО ЗА РАБОТУ:</span>
+        <span class="result-total-value">${data.subtotal.toLocaleString('ru-RU')} ₽</span>
       </div>
 
-      <div class="result-time-tag">⏱️ Ориентировочный срок: ${data.timeEstimate}</div>
-
-      ${data.symptomNotes.length > 0 ? `
-        <div class="result-symptoms">
-          <div class="symptoms-title">📋 Выявленные работы по описанию:</div>
-          ${data.symptomNotes.map(n => `<div class="symptom-line">${n}</div>`).join('')}
-        </div>
-      ` : ''}
+      <div class="result-parts-note">
+        ⚠️ Стоимость запчастей рассчитывается отдельно при осмотре автомобиля мастером-приёмщиком
+      </div>
 
       <div class="result-disclaimer">
-        * Окончательная смета утверждается после осмотра мастером-приёмщиком. Стоимость оригинальных запчастей может отличаться от аналогов.
+        * Указана стоимость работ без учёта запасных частей. Окончательная смета формируется после осмотра.
       </div>
 
       <button id="booking-btn" class="booking-btn" onclick="handleBooking()">
-        📅 Записаться со скидкой 10% в Telegram
+        📅 Записаться на ремонт в Telegram
       </button>
     `;
 
@@ -312,21 +517,28 @@ document.addEventListener('DOMContentLoaded', () => {
   // Telegram Booking Handler (global)
   // ============================================================
   window.handleBooking = async function() {
-    const userPhone = prompt('Введите ваш телефон для подтверждения записи со скидкой 10%:');
+    const userPhone = prompt('Введите ваш телефон для подтверждения записи:');
     if (!userPhone) return;
 
-    const carBrand = document.getElementById('car-brand').value;
-    const carModel = document.getElementById('car-model').value || '—';
-    const serviceKey = document.getElementById('service-type').value;
+    const brand = brandSelect ? brandSelect.value : '';
+    const brandLabel = vehicleDB[brand] ? vehicleDB[brand].label : brand;
+    const model = modelSelect ? modelSelect.value : '—';
+    const year = yearSelect ? yearSelect.value : '—';
+    const engine = engineSelect ? engineSelect.value : '—';
+    const trans = transSelect ? transSelect.value : '—';
+
+    const selected = getSelectedServices();
+    const servicesList = selected.map(s => `  • ${s.name}`).join('\n');
     const totalEl = resultBox.querySelector('.result-total-value');
     const estimate = totalEl ? totalEl.innerText : '—';
 
     const tgMessage =
       `🚗 <b>ЗАЯВКА С КАЛЬКУЛЯТОРА АВТОСЕРВИСА!</b>\n\n` +
       `📞 <b>Телефон:</b> <code>${userPhone}</code>\n` +
-      `🚘 <b>Автомобиль:</b> ${carBrand.toUpperCase()} ${carModel}\n` +
-      `🛠️ <b>Услуга:</b> ${serviceKey}\n` +
-      `💰 <b>Смета:</b> <b>${estimate}</b>\n` +
+      `🚘 <b>Автомобиль:</b> ${brandLabel} ${model} ${year}\n` +
+      `🔧 <b>Двигатель:</b> ${engine}L · ${trans}\n\n` +
+      `🛠️ <b>Выбранные работы:</b>\n${servicesList}\n\n` +
+      `💰 <b>Смета (работа):</b> <b>${estimate}</b>\n` +
       `📅 <b>Дата:</b> ${new Date().toLocaleString('ru-RU')}`;
 
     const btn = resultBox.querySelector('.booking-btn');
@@ -357,9 +569,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function prefillService(key) {
-  const selectElem = document.getElementById('service-type');
-  if (selectElem) {
-    selectElem.value = key;
-    document.getElementById('calc-section').scrollIntoView({ behavior: 'smooth' });
+  const section = document.getElementById('calc-section');
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth' });
   }
 }

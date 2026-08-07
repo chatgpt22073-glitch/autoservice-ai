@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Apex Auto — Премиальный Автотехцентр & Калькулятор Ремонта</title>
+  <title>Apex Auto — Премиальный Автотехцентр &amp; Калькулятор Ремонта</title>
   <meta name="description" content="Моментальный онлайн-расчёт стоимости ремонта автомобиля. Сертифицированная ремзона, современное диагностическое оборудование и комфортная зона отдыха.">
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,7 @@
       <ul id="nav-links" class="nav-links">
         <li><a href="#calc-section" class="nav-link">Калькулятор</a></li>
         <li><a href="#gallery" class="nav-link">О техцентре</a></li>
-        <li><a href="#services" class="nav-link">Услуги & Цены</a></li>
+        <li><a href="#services" class="nav-link">Услуги &amp; Цены</a></li>
       </ul>
 
       <a href="tel:+78005553535" class="header-btn">
@@ -64,7 +64,7 @@
           </div>
           <div>
             <div class="stat-num">4.9 ★</div>
-            <div class="stat-lbl">Рейтинг Яндекс & Google</div>
+            <div class="stat-lbl">Рейтинг Яндекс &amp; Google</div>
           </div>
         </div>
       </div>
@@ -73,11 +73,11 @@
       <div>
         <div class="calc-card">
           <div class="calc-title">⚡ Калькулятор ремонта онлайн</div>
-          <div class="calc-sub">Укажите параметры для моментального расчета сметы</div>
+          <div class="calc-sub">Выберите автомобиль и отметьте нужные работы — стоимость рассчитается автоматически</div>
 
-          <form id="calc-form">
+          <div class="form-row-2col">
             <div class="form-group">
-              <label class="form-label" for="car-brand">Марка автомобиля</label>
+              <label class="form-label" for="car-brand">Марка</label>
               <select id="car-brand" class="form-select" required>
                 <option value="mercedes">Mercedes-Benz</option>
                 <option value="bmw">BMW</option>
@@ -89,36 +89,59 @@
                 <option value="hyundai">Hyundai</option>
                 <option value="kia">Kia</option>
                 <option value="nissan">Nissan</option>
-                <option value="other">Другая марка</option>
               </select>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="car-model">Модель и год выпуска</label>
-              <input type="text" id="car-model" class="form-input" placeholder="Например: Camry 2021, X5 2020, Tucson 2023...">
+              <label class="form-label" for="car-model">Модель</label>
+              <select id="car-model" class="form-select" required>
+                <option value="">— Выберите модель —</option>
+              </select>
             </div>
+          </div>
 
+          <div class="form-row-3col">
             <div class="form-group">
-              <label class="form-label" for="service-type">Категория сервиса</label>
-              <select id="service-type" class="form-select">
-                <option value="body">Кузовной ремонт & Покраска</option>
-                <option value="engine">Диагностика & Ремонт ДВС</option>
-                <option value="maintenance">Регламентное ТО & Замена масел</option>
-                <option value="suspension">Ходовая часть & Подвеска</option>
-                <option value="detailing">Детейлинг & Защита Керамикой</option>
-                <option value="diagnostics">Компьютерная Диагностика</option>
+              <label class="form-label" for="car-year">Год выпуска</label>
+              <select id="car-year" class="form-select">
               </select>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="custom-description">Опишите проблему (опционально)</label>
-              <textarea id="custom-description" class="form-textarea" placeholder="Например: Стук в передней подвеске при проезде кочек, вмятина на левой двери, течёт масло из-под клапанной крышки..."></textarea>
+              <label class="form-label" for="engine-volume">Объём двигателя</label>
+              <select id="engine-volume" class="form-select">
+                <option value="1.4">1.4L</option>
+                <option value="1.6">1.6L</option>
+                <option value="1.8">1.8L</option>
+                <option value="2.0" selected>2.0L</option>
+                <option value="2.5">2.5L</option>
+                <option value="3.0">3.0L</option>
+                <option value="3.5">3.5L</option>
+                <option value="4.0">4.0L</option>
+                <option value="5.0">5.0L+</option>
+              </select>
             </div>
 
-            <button type="submit" id="calc-btn" class="calc-submit-btn">
-              ⚡ Рассчитать стоимость ремонта
-            </button>
-          </form>
+            <div class="form-group">
+              <label class="form-label" for="transmission">Трансмиссия</label>
+              <select id="transmission" class="form-select">
+                <option value="МКПП">МКПП</option>
+                <option value="АКПП">АКПП</option>
+                <option value="Вариатор">Вариатор</option>
+                <option value="Робот DSG/S-Tronic">Робот DSG/S-Tronic</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="checklist-section-label">🛠️ Выберите необходимые работы:</div>
+
+          <div id="service-checklist" class="service-checklist"></div>
+
+          <div id="live-total" class="live-total"></div>
+
+          <button type="button" id="calc-btn" class="calc-submit-btn">
+            ⚡ Рассчитать стоимость
+          </button>
 
           <!-- Result Component (rendered dynamically by app.js) -->
           <div id="result-box" class="result-box"></div>
@@ -175,56 +198,56 @@
         
         <div class="service-card">
           <div>
-            <h3>🎨 Кузовной ремонт & Покраска</h3>
+            <h3>🎨 Кузовной ремонт &amp; Покраска</h3>
             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Локальный ремонт кузова, удаление вмятин без покраски PDR, немецкая покрасочная камера.</p>
           </div>
           <div>
             <div class="service-price">от 12 000 ₽</div>
-            <button onclick="prefillService('body')" class="service-select-btn">Выбрать & Рассчитать</button>
+            <button onclick="prefillService('body')" class="service-select-btn">Выбрать &amp; Рассчитать</button>
           </div>
         </div>
 
         <div class="service-card">
           <div>
-            <h3>🔧 Диагностика & Ремонт ДВС</h3>
+            <h3>🔧 Диагностика &amp; Ремонт ДВС</h3>
             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Эндоскопия цилиндров, капитальный ремонт бензиновых и дизельных двигателей, замена ГРМ.</p>
           </div>
           <div>
             <div class="service-price">от 8 500 ₽</div>
-            <button onclick="prefillService('engine')" class="service-select-btn">Выбрать & Рассчитать</button>
+            <button onclick="prefillService('engine')" class="service-select-btn">Выбрать &amp; Рассчитать</button>
           </div>
         </div>
 
         <div class="service-card">
           <div>
-            <h3>🛢️ Регламентное ТО & Масла</h3>
+            <h3>🛢️ Регламентное ТО &amp; Масла</h3>
             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Замена масла в ДВС и АКПП, всех фильтров, свечей зажигания и комплексный осмотр по 45 пунктам.</p>
           </div>
           <div>
             <div class="service-price">от 4 500 ₽</div>
-            <button onclick="prefillService('maintenance')" class="service-select-btn">Выбрать & Рассчитать</button>
+            <button onclick="prefillService('maintenance')" class="service-select-btn">Выбрать &amp; Рассчитать</button>
           </div>
         </div>
 
         <div class="service-card">
           <div>
-            <h3>🚗 Подвеска & 3D Сход-Развал</h3>
+            <h3>🚗 Подвеска &amp; 3D Сход-Развал</h3>
             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Замена амортизаторов, сайлентблоков, рычагов и 3D-регулировка сход-развала на стенде.</p>
           </div>
           <div>
             <div class="service-price">от 6 500 ₽</div>
-            <button onclick="prefillService('suspension')" class="service-select-btn">Выбрать & Рассчитать</button>
+            <button onclick="prefillService('suspension')" class="service-select-btn">Выбрать &amp; Рассчитать</button>
           </div>
         </div>
 
         <div class="service-card">
           <div>
-            <h3>✨ Детейлинг & Защита Керамикой</h3>
+            <h3>✨ Детейлинг &amp; Защита Керамикой</h3>
             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Глубокая полировка кузова, нанесение керамического покрытия 9H, оклейка антигравийной плёнкой.</p>
           </div>
           <div>
             <div class="service-price">от 16 000 ₽</div>
-            <button onclick="prefillService('detailing')" class="service-select-btn">Выбрать & Рассчитать</button>
+            <button onclick="prefillService('detailing')" class="service-select-btn">Выбрать &amp; Рассчитать</button>
           </div>
         </div>
 
@@ -235,7 +258,7 @@
           </div>
           <div>
             <div class="service-price">от 2 500 ₽</div>
-            <button onclick="prefillService('diagnostics')" class="service-select-btn">Выбрать & Рассчитать</button>
+            <button onclick="prefillService('diagnostics')" class="service-select-btn">Выбрать &amp; Рассчитать</button>
           </div>
         </div>
 
