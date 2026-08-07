@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apex Auto — Премиальный Автотехцентр & Калькулятор Ремонта</title>
+  <meta name="description" content="Моментальный онлайн-расчёт стоимости ремонта автомобиля. Сертифицированная ремзона, современное диагностическое оборудование и комфортная зона отдыха.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Ambient Glow Backgrounds -->
+  <div class="ambient-glow glow-blue"></div>
+  <div class="ambient-glow glow-cyan"></div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="container nav-wrapper">
+      <a href="#" class="brand-logo">
+        <div class="logo-icon">⚡</div>
+        APEX <span>AUTO</span>
+      </a>
+
+      <button id="mobile-toggle" class="mobile-toggle" aria-label="Открыть меню">☰</button>
+
+      <ul id="nav-links" class="nav-links">
+        <li><a href="#calc-section" class="nav-link">Калькулятор</a></li>
+        <li><a href="#gallery" class="nav-link">О техцентре</a></li>
+        <li><a href="#services" class="nav-link">Услуги & Цены</a></li>
+      </ul>
+
+      <a href="tel:+78005553535" class="header-btn">
+        📞 +7 (800) 555-35-35
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero & Repair Cost Calculator -->
+  <section class="container hero-section" id="calc-section">
+    <div class="hero-grid">
+      
+      <!-- Hero Left Column -->
+      <div class="hero-left-content">
+        <div class="badge-tag">
+          <span class="badge-dot"></span> Онлайн-расчёт стоимости v2.0
+        </div>
+        <h1 class="hero-title">
+          Точный расчёт ремонта за <span>30 секунд</span>
+        </h1>
+        <p class="hero-desc">
+          Укажите марку автомобиля и выберите характер работ или опишите симптомы — калькулятор рассчитает смету и сформирует предварительный список запчастей.
+        </p>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num">15 000+</div>
+            <div class="stat-lbl">Отремонтированных авто</div>
+          </div>
+          <div>
+            <div class="stat-num">24 Месяца</div>
+            <div class="stat-lbl">Фирменной гарантии</div>
+          </div>
+          <div>
+            <div class="stat-num">4.9 ★</div>
+            <div class="stat-lbl">Рейтинг Яндекс & Google</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculator Glass Card -->
+      <div>
+        <div class="calc-card">
+          <div class="calc-title">⚡ Калькулятор ремонта онлайн</div>
+          <div class="calc-sub">Укажите параметры для моментального расчета сметы</div>
+
+          <form id="calc-form">
+            <div class="form-group">
+              <label class="form-label" for="car-brand">Марка автомобиля</label>
+              <select id="car-brand" class="form-select" required>
+                <option value="mercedes">Mercedes-Benz</option>
+                <option value="bmw">BMW</option>
+                <option value="audi">Audi</option>
+                <option value="porsche">Porsche</option>
+                <option value="lexus">Lexus</option>
+                <option value="toyota" selected>Toyota</option>
+                <option value="volkswagen">Volkswagen</option>
+                <option value="other">Другая марка</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="car-model">Модель и год выпуска</label>
+              <input type="text" id="car-model" class="form-input" placeholder="Например: Camry 2021 или X5 2020">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="service-type">Категория сервиса</label>
+              <select id="service-type" class="form-select">
+                <option value="body">Кузовной ремонт & Покраска</option>
+                <option value="engine">Диагностика & Ремонт ДВС</option>
+                <option value="maintenance">Регламентное ТО & Замена масел</option>
+                <option value="suspension">Ходовая часть & Подвеска</option>
+                <option value="detailing">Детейлинг & Защита Керамикой</option>
+                <option value="diagnostics">Компьютерная Диагностика</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="custom-description">Симптомы поломки (опционально)</label>
+              <textarea id="custom-description" class="form-textarea" placeholder="Например: Стук в передней подвеске при проезде кочек и вмятина на левой двери..."></textarea>
+            </div>
+
+            <button type="submit" id="calc-btn" class="calc-submit-btn">
+              ⚡ Рассчитать стоимость ремонта
+            </button>
+          </form>
+
+          <!-- Result Component -->
+          <div id="result-box" class="result-box">
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">ОРИЕНТИРОВОЧНАЯ СМЕТА:</div>
+            <div id="result-price-num" class="result-price-num">0 ₽</div>
+            <div id="result-time-tag" class="result-time-tag">⏱️ Срок: 1-2 дня</div>
+            <div id="result-details-text" class="result-details">
+              Сформирован предварительный расчет стоимости ремонта и комплекта деталей.
+            </div>
+            <button id="booking-btn" class="booking-btn">
+              📅 Записаться со скидкой 10% в Telegram
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Photo & Facility Media Gallery Section -->
+  <section class="gallery-section" id="gallery">
+    <div class="container">
+      <h2 class="sec-title">О нашем автотехцентре</h2>
+      <p class="sec-sub">Передовое оснащение ремзоны и высокий уровень сервиса для автовладельцев</p>
+
+      <div class="gallery-grid">
+        
+        <div class="gallery-card">
+          <img src="images/repair_zone.jpg" alt="Ремонтная зона автосервиса" class="gallery-img">
+          <div class="gallery-body">
+            <h3 class="gallery-title">Современная ремзона</h3>
+            <p class="gallery-desc">Чистая профессиональная зона с подъемниками, специнструментом и сертифицированными мастерами.</p>
+          </div>
+        </div>
+
+        <div class="gallery-card">
+          <img src="images/lounge_zone.jpg" alt="Зона ожидания клиентов" class="gallery-img">
+          <div class="gallery-body">
+            <h3 class="gallery-title">Комфортная lounge-зона</h3>
+            <p class="gallery-desc">Уютная зона отдыха с кожаными диванами, свежим кофе, бесплатным Wi-Fi и обзором ремзоны.</p>
+          </div>
+        </div>
+
+        <div class="gallery-card">
+          <img src="images/diagnostic_equipment.jpg" alt="Компьютерная диагностика авто" class="gallery-img">
+          <div class="gallery-body">
+            <h3 class="gallery-title">Дилерская диагностика</h3>
+            <p class="gallery-desc">Компьютерные сканеры дилерского уровня для мгновенного чтения ошибок и проверки электронных систем.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Services Grid -->
+  <section class="services-section" id="services">
+    <div class="container">
+      <h2 class="sec-title">Основные услуги и цены</h2>
+      <p class="sec-sub">Честная стоимость работ и оригинальные запчасти с собственного склада</p>
+
+      <div class="services-grid">
+        
+        <div class="service-card">
+          <div>
+            <h3>🎨 Кузовной ремонт & Покраска</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Локальный ремонт кузова, удаление вмятин без покраски PDR, немецкая покрасочная камера.</p>
+          </div>
+          <div>
+            <div class="service-price">от 12 000 ₽</div>
+            <button onclick="prefillService('body')" class="service-select-btn">Выбрать & Рассчитать</button>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <div>
+            <h3>🔧 Диагностика & Ремонт ДВС</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Эндоскопия цилиндров, капитальный ремонт бензиновых и дизельных двигателей, замена ГРМ.</p>
+          </div>
+          <div>
+            <div class="service-price">от 8 500 ₽</div>
+            <button onclick="prefillService('engine')" class="service-select-btn">Выбрать & Рассчитать</button>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <div>
+            <h3>🛢️ Регламентное ТО & Масла</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Замена масла в ДВС и АКПП, всех фильтров, свечей зажигания и комплексный осмотр по 45 пунктам.</p>
+          </div>
+          <div>
+            <div class="service-price">от 4 500 ₽</div>
+            <button onclick="prefillService('maintenance')" class="service-select-btn">Выбрать & Рассчитать</button>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <div>
+            <h3>🚗 Подвеска & 3D Сход-Развал</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Замена амортизаторов, сайлентблоков, рычагов и 3D-регулировка сход-развала на стенде.</p>
+          </div>
+          <div>
+            <div class="service-price">от 6 500 ₽</div>
+            <button onclick="prefillService('suspension')" class="service-select-btn">Выбрать & Рассчитать</button>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <div>
+            <h3>✨ Детейлинг & Защита Керамикой</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Глубокая полировка кузова, нанесение керамического покрытия 9H, оклейка антигравийной плёнкой.</p>
+          </div>
+          <div>
+            <div class="service-price">от 16 000 ₽</div>
+            <button onclick="prefillService('detailing')" class="service-select-btn">Выбрать & Рассчитать</button>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <div>
+            <h3>💻 Компьютерная Диагностика</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">Полное сканирование всех электронных блоков управления дилерским сканером.</p>
+          </div>
+          <div>
+            <div class="service-price">от 2 500 ₽</div>
+            <button onclick="prefillService('diagnostics')" class="service-select-btn">Выбрать & Рассчитать</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 Apex Auto. Все права защищены.</p>
+      <p style="margin-top: 8px;">📍 Москва, Ленинградский проспект, 39 | 🕒 Ежедневно с 09:00 до 21:00</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
