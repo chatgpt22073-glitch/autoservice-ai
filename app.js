@@ -583,24 +583,151 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ============================================================
-  // CAR STATUS LOOKUP WIDGET LOGIC
+  // CAR STATUS LOOKUP WIDGET LOGIC v2.0 (Dynamic Order Generator)
   // ============================================================
   const statusForm = document.getElementById('status-form');
   const statusPlateInput = document.getElementById('status-plate-input');
   const statusResult = document.getElementById('status-result');
-  const statusVehicleName = document.getElementById('status-vehicle-name');
+
+  const demoOrders = {
+    'А777АА777': {
+      car: 'Porsche Cayenne Turbo (2022)',
+      orderNum: 'ЗН-98412',
+      master: 'Алексей Громов (Старший мастер ремзоны)',
+      pct: 85,
+      statusTitle: 'В процессе — Покраска и полировка',
+      steps: [
+        { done: true, title: 'Компьютерная диагностика и приемка', time: 'Завершено в 09:30' },
+        { done: true, title: 'Доставка оригинальных кузовных деталей', time: 'Завершено в 11:45' },
+        { active: true, title: 'Покрасочная камера и сушка 9H', time: 'В процессе — Готовность 85%' },
+        { pending: true, title: 'Детейлинг, сборка и финишная выдача', time: 'Ожидается к 18:00' }
+      ]
+    },
+    'В888ВВ799': {
+      car: 'BMW X5 xDrive40i (2021)',
+      orderNum: 'ЗН-98305',
+      master: 'Дмитрий Соколов (Технический эксперт)',
+      pct: 100,
+      statusTitle: '✅ Заказ полностью готов к выдаче!',
+      steps: [
+        { done: true, title: 'Инспекция ходовой части и 3D сход-развал', time: 'Завершено в 10:00' },
+        { done: true, title: 'Замена тормозных дисков и суппортов', time: 'Завершено в 13:20' },
+        { done: true, title: 'Финишная трехэтапная мойка и озонирование', time: 'Завершено в 15:40' },
+        { done: true, title: 'Автомобиль на парковке выдачи', time: 'Готов к получению' }
+      ]
+    },
+    'Е333КК777': {
+      car: 'Audi Q8 55 TFSI (2023)',
+      orderNum: 'ЗН-98510',
+      master: 'Сергей Николаев (Диагност-электрик)',
+      pct: 25,
+      statusTitle: 'Диагностика и определение сметы',
+      steps: [
+        { done: true, title: 'Приемка и техническая мойка', time: 'Завершено в 11:10' },
+        { active: true, title: 'Сканирование электронных блоков дилерским сканером', time: 'В процессе — Готовность 25%' },
+        { pending: true, title: 'Согласование перечня запчастей с владельцем', time: 'Ожидается в 14:00' },
+        { pending: true, title: 'Проведение планового ремонта', time: 'Запланировано на завтра' }
+      ]
+    }
+  };
+
+  function processStatusLookup(rawPlate) {
+    const plate = rawPlate.replaceAll(' ', '').toUpperCase();
+    if (!plate) return;
+
+    let order = demoOrders[plate];
+
+    // Dynamic fallback for any custom license plate typed by the user!
+    if (!order) {
+      // Deterministic hash based on plate string length
+      const hash = plate.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      const cars = ['Mercedes-Benz E-Class', 'Toyota RAV4', 'Lexus RX350', 'Volkswagen Tiguan', 'Audi A6 Quattro'];
+      const masters = ['Игорь Васильев', 'Михаил Орлов', 'Андрей Волков'];
+      const pctOptions = [40, 65, 90];
+
+      const chosenCar = cars[hash % cars.length];
+      const chosenMaster = masters[hash % masters.length];
+      const chosenPct = pctOptions[hash % pctOptions.length];
+      const orderNo = `ЗН-${10000 + (hash % 89999)}`;
+
+      order = {
+        car: `${chosenCar} (${plate})`,
+        orderNum: orderNo,
+        master: `${chosenMaster} (Мастер-приемщик)`,
+        pct: chosenPct,
+        statusTitle: `В процессе выполнения (${chosenPct}%)`,
+        steps: [
+          { done: true, title: 'Приемка автомобиля и осмотр', time: 'Завершено сегодня в 09:00' },
+          { done: true, title: 'Компьютерная диагностика и дефектовка', time: 'Завершено в 11:15' },
+          { active: true, title: 'Выполнение регламентных сервисных работ', time: `В процессе — ${chosenPct}%` },
+          { pending: true, title: 'Контроль качества и подготовка к выдаче', time: 'Ожидается сегодня в 19:00' }
+        ]
+      };
+    }
+
+    const stepsHTML = order.steps.map(s => {
+      let icon = '✓';
+      let cls = 'step-done';
+      if (s.active) { icon = '⚡'; cls = 'step-active'; }
+      if (s.pending) { icon = '⏳'; cls = 'step-pending'; }
+
+      return `
+        <div class="status-step ${cls}">
+          <div class="step-icon">${icon}</div>
+          <div class="step-content">
+            <div class="step-title">${s.title}</div>
+            <div class="step-time">${s.time}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    statusResult.innerHTML = `
+      <div class="status-vehicle-badge">🚘 ${order.car}</div>
+
+      <div class="status-progress-wrapper">
+        <div class="status-progress-header">
+          <span>Прогресс выполнения:</span>
+          <span>${order.pct}%</span>
+        </div>
+        <div class="status-progress-bar-bg">
+          <div class="status-progress-bar-fill" style="width: ${order.pct}%;"></div>
+        </div>
+      </div>
+
+      <div class="status-meta-grid">
+        <div>
+          <div class="meta-item-lbl">Заказ-наряд</div>
+          <div class="meta-item-val">${order.orderNum}</div>
+        </div>
+        <div>
+          <div class="meta-item-lbl">Мастер-приёмщик</div>
+          <div class="meta-item-val">${order.master}</div>
+        </div>
+      </div>
+
+      <div class="status-steps">
+        ${stepsHTML}
+      </div>
+    `;
+
+    statusResult.style.display = 'block';
+    statusResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 
   if (statusForm && statusPlateInput && statusResult) {
     statusForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const plate = statusPlateInput.value.trim().toUpperCase();
-      if (!plate) return;
-
-      statusVehicleName.textContent = `🚘 Статус автомобиля (${plate})`;
-      statusResult.style.display = 'block';
-      statusResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      processStatusLookup(statusPlateInput.value);
     });
   }
+
+  window.quickCheckStatus = function(plate) {
+    if (statusPlateInput) {
+      statusPlateInput.value = plate;
+    }
+    processStatusLookup(plate);
+  };
 
   // ============================================================
   // FAQ ACCORDION LOGIC
