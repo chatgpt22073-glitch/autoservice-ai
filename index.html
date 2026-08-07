@@ -28,8 +28,10 @@
 
       <ul id="nav-links" class="nav-links">
         <li><a href="#calc-section" class="nav-link">Калькулятор</a></li>
+        <li><a href="#before-after" class="nav-link">Результаты До/После</a></li>
+        <li><a href="#status-check" class="nav-link">Статус ремонта</a></li>
+        <li><a href="#faq" class="nav-link">Частые вопросы</a></li>
         <li><a href="#gallery" class="nav-link">О техцентре</a></li>
-        <li><a href="#services" class="nav-link">Услуги &amp; Цены</a></li>
       </ul>
 
       <a href="tel:+78005553535" class="header-btn">
@@ -259,6 +261,146 @@
           <div>
             <div class="service-price">от 2 500 ₽</div>
             <button onclick="prefillService('diagnostics')" class="service-select-btn">Выбрать &amp; Рассчитать</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Before / After Section -->
+  <section class="before-after-section" id="before-after">
+    <div class="container">
+      <h2 class="sec-title">Результаты ремонта: До и После</h2>
+      <p class="sec-sub">Потяните за бегунок в центре фото, чтобы сравнить результат кузовного ремонта и полировки</p>
+
+      <div class="ba-slider-container" id="ba-slider-container">
+        <div class="ba-img ba-after-img">
+          <img src="images/car_after.jpg" alt="После кузовного ремонта">
+          <span class="ba-badge badge-after">ПОСЛЕ РЕМОНТА</span>
+        </div>
+        <div class="ba-img ba-before-img" id="ba-before-wrapper">
+          <img src="images/car_before.jpg" alt="До кузовного ремонта">
+          <span class="ba-badge badge-before">ДО РЕМОНТА</span>
+        </div>
+        <input type="range" min="0" max="100" value="50" class="ba-range-input" id="ba-range-input" aria-label="Ползунок до и после">
+        <div class="ba-handle" id="ba-handle">
+          <div class="ba-handle-line"></div>
+          <div class="ba-handle-circle">↔</div>
+          <div class="ba-handle-line"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Car Status Lookup Widget Section -->
+  <section class="status-section" id="status-check">
+    <div class="container">
+      <div class="status-box-card">
+        <div class="badge-tag" style="margin-bottom: 12px;">
+          <span class="badge-dot"></span> Онлайн-отслеживание v1.0
+        </div>
+        <h2 class="sec-title" style="text-align: left; font-size: 1.8rem; margin-bottom: 8px;">Проверьте статус готовности авто</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 24px;">Введите госномер автомобиля (например: <code>А777АА777</code> или <code>М123АВ799</code>), чтобы посмотреть текущий этап работ в реальном времени</p>
+
+        <form id="status-form" class="status-search-form">
+          <input type="text" id="status-plate-input" class="status-input" placeholder="А 777 АА 777" required>
+          <button type="submit" class="status-submit-btn">🔍 Отследить статус</button>
+        </form>
+
+        <div id="status-result" class="status-result-display" style="display: none;">
+          <div class="status-vehicle-badge" id="status-vehicle-name">🚘 Toyota Camry (А 777 АА 777)</div>
+          <div class="status-steps">
+            <div class="status-step step-done">
+              <div class="step-icon">✓</div>
+              <div class="step-content">
+                <div class="step-title">Компьютерная диагностика и приемка</div>
+                <div class="step-time">Завершено 07.08 в 10:30</div>
+              </div>
+            </div>
+            <div class="status-step step-done">
+              <div class="step-icon">✓</div>
+              <div class="step-content">
+                <div class="step-title">Подбор и доставка оригинальных запчастей</div>
+                <div class="step-time">Завершено 07.08 в 12:15</div>
+              </div>
+            </div>
+            <div class="status-step step-active">
+              <div class="step-icon">⚡</div>
+              <div class="step-content">
+                <div class="step-title">Кузовные работы и покрасочная камера</div>
+                <div class="step-time">В процессе — Готовность 85%</div>
+              </div>
+            </div>
+            <div class="status-step step-pending">
+              <div class="step-icon">🧼</div>
+              <div class="step-content">
+                <div class="step-title">Финишная мойка, детейлинг и выдача</div>
+                <div class="step-time">Ожидаемое время: 18:00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Accordion Section -->
+  <section class="faq-section" id="faq">
+    <div class="container">
+      <h2 class="sec-title">Часто задаваемые вопросы</h2>
+      <p class="sec-sub">Ответы на ключевые вопросы об условиях ремонта, гарантии и оплате</p>
+
+      <div class="faq-accordion">
+        
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>🛡️ Какая гарантия предоставляется на работы и запчасти?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Мы предоставляем официальную фирменную гарантию **24 месяца** на все выполненные слесарные и кузовные работы, а также **12 месяцев** на оригинальные запасные части, приобретённые на нашем складе.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>☕ Можно ли присутствовать в ремзоне во время обслуживания?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Да! Мы строго соблюдаем принципы прозрачности. Вы можете находиться в ремзоне в сопровождении мастера-приёмщика после прохождения инструктажа, либо наблюдать за процессом ремонта из уютной lounge-зоны через панорамные окна или онлайн-камеры.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>📦 Можно ли приехать со своими запасными частями?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Конечно. Вы можете привезти свои детали. В этом случае гарантия распространяется на качество выполненных монтажных работ мастера.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>📝 Как фиксируется смета и может ли измениться цена?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Смета фиксируется в заказ-наряде ДО начала любых работ. Без вашего письменного или мессенджер-подтверждения не проводится ни одна дополнительная операция. Окончательная сумма не меняется в процессе ремонта.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>💳 Какие формы оплаты принимаются?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Мы принимаем оплату банковскими картами, наличными, по QR-коду СБП, а также работаем по безналичному расчету с юридическими лицами (с НДС и без НДС).</p>
           </div>
         </div>
 

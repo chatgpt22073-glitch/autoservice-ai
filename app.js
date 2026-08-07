@@ -566,6 +566,60 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     btn.innerText = '✅ Заявка отправлена!';
   };
+
+  // ============================================================
+  // INTERACTIVE BEFORE / AFTER SLIDER LOGIC
+  // ============================================================
+  const baRangeInput = document.getElementById('ba-range-input');
+  const baBeforeWrapper = document.getElementById('ba-before-wrapper');
+  const baHandle = document.getElementById('ba-handle');
+
+  if (baRangeInput && baBeforeWrapper && baHandle) {
+    baRangeInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      baBeforeWrapper.style.width = `${val}%`;
+      baHandle.style.left = `${val}%`;
+    });
+  }
+
+  // ============================================================
+  // CAR STATUS LOOKUP WIDGET LOGIC
+  // ============================================================
+  const statusForm = document.getElementById('status-form');
+  const statusPlateInput = document.getElementById('status-plate-input');
+  const statusResult = document.getElementById('status-result');
+  const statusVehicleName = document.getElementById('status-vehicle-name');
+
+  if (statusForm && statusPlateInput && statusResult) {
+    statusForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const plate = statusPlateInput.value.trim().toUpperCase();
+      if (!plate) return;
+
+      statusVehicleName.textContent = `🚘 Статус автомобиля (${plate})`;
+      statusResult.style.display = 'block';
+      statusResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  }
+
+  // ============================================================
+  // FAQ ACCORDION LOGIC
+  // ============================================================
+  const faqQuestions = document.querySelectorAll('.faq-question');
+  faqQuestions.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isActive = item.classList.contains('active');
+
+      // Close all other items
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+
+      // Toggle clicked item
+      if (!isActive) {
+        item.classList.add('active');
+      }
+    });
+  });
 });
 
 function prefillService(key) {
