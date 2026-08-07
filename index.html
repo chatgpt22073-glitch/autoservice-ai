@@ -86,13 +86,16 @@
                 <option value="lexus">Lexus</option>
                 <option value="toyota" selected>Toyota</option>
                 <option value="volkswagen">Volkswagen</option>
+                <option value="hyundai">Hyundai</option>
+                <option value="kia">Kia</option>
+                <option value="nissan">Nissan</option>
                 <option value="other">Другая марка</option>
               </select>
             </div>
 
             <div class="form-group">
               <label class="form-label" for="car-model">Модель и год выпуска</label>
-              <input type="text" id="car-model" class="form-input" placeholder="Например: Camry 2021 или X5 2020">
+              <input type="text" id="car-model" class="form-input" placeholder="Например: Camry 2021, X5 2020, Tucson 2023...">
             </div>
 
             <div class="form-group">
@@ -108,8 +111,8 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="custom-description">Симптомы поломки (опционально)</label>
-              <textarea id="custom-description" class="form-textarea" placeholder="Например: Стук в передней подвеске при проезде кочек и вмятина на левой двери..."></textarea>
+              <label class="form-label" for="custom-description">Опишите проблему (опционально)</label>
+              <textarea id="custom-description" class="form-textarea" placeholder="Например: Стук в передней подвеске при проезде кочек, вмятина на левой двери, течёт масло из-под клапанной крышки..."></textarea>
             </div>
 
             <button type="submit" id="calc-btn" class="calc-submit-btn">
@@ -117,18 +120,8 @@
             </button>
           </form>
 
-          <!-- Result Component -->
-          <div id="result-box" class="result-box">
-            <div style="font-size: 0.85rem; color: var(--text-secondary);">ОРИЕНТИРОВОЧНАЯ СМЕТА:</div>
-            <div id="result-price-num" class="result-price-num">0 ₽</div>
-            <div id="result-time-tag" class="result-time-tag">⏱️ Срок: 1-2 дня</div>
-            <div id="result-details-text" class="result-details">
-              Сформирован предварительный расчет стоимости ремонта и комплекта деталей.
-            </div>
-            <button id="booking-btn" class="booking-btn">
-              📅 Записаться со скидкой 10% в Telegram
-            </button>
-          </div>
+          <!-- Result Component (rendered dynamically by app.js) -->
+          <div id="result-box" class="result-box"></div>
 
         </div>
       </div>
